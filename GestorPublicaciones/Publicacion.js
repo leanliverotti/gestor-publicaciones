@@ -6,14 +6,14 @@ export class Publicacion {
   constructor(titulo, descripcion, autor) {
     this.titulo = titulo;
     this.descripcion = descripcion;
-    this.autor = autor;
+    this.autor = usuario;
     this.fechaPublicacion = new Date();
     this.activa = true;
   }
 
   // Devuelve un string corto combinando titulo y autor
   mostrarResumen() {
-    return `"${this.titulo}" - publicado por ${this.autor}`;
+    return `"${this.titulo}" - publicado por ${autor.mostrarPerfil()}`;
   }
 
   // Devuelve el valor del atributo activa
@@ -26,3 +26,5 @@ export class Publicacion {
     return this.autor === nombre;
   }
 }
+
+

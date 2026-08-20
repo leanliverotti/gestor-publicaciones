@@ -75,3 +75,13 @@ publicaciones
 console.log("\n=== JSON ===");
 const publicacionesJSON = JSON.stringify(publicaciones, null, 2);
 console.log(publicacionesJSON);
+
+
+const luis = new usuario ("luis", "[EMAIL_ADDRESS]");
+const ana = new usuario ("ana", "[EMAIL_ADDRESS]");
+const lucho = new usuario ("lucho", "[EMAIL_ADDRESS]");
+
+const publuis = new Publicacion("Vendo apuntes de Algebra", "Apuntes completos de la cursada 2025, con ejercicios resueltos.",luis);
+const pubana = new Publicacion("Busco companiero de grupo para Laboratorio", "Necesito un integrante mas para el TP del hilo conductor.", ana);
+const publucho = new Publicacion("Ofrezco clases particulares de JavaScript", "Clases online, una hora, nivel inicial e intermedio.", lucho);
+const pubana2 = new Publicacion ("Vendo apuntes de Algebra", "Apuntes completos de la cursada 2025, con ejercicios resueltos.", ana);
