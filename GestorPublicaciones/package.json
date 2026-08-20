@@ -1,0 +1,12 @@
+{
+  "name": "gestor-publicaciones",
+  "version": "1.0.0",
+  "description": "Gestor de publicaciones de una comunidad estudiantil",
+  "license": "ISC",
+  "author": "Leandro Liverotti",
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  }
+}

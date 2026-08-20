@@ -1,0 +1,12 @@
+objeto 1: computadora
+atributos: capacidad disco, memoria ram, palca de video, procesador, mother 
+acciones: prenderla, enchufarle perifericos, reiniciarla, ensanblarla, ponerle mas ram, agregarle almacenamiento, repararla, entrar a la bios
+
+
+objeto 2: moto 
+atributos: cc, color, rodado, luces(led o alogenas), suspension, capacidad de tanque
+acciones: arrancar, cargar combustible, acelerar, frenar, prender las luces, poner cambio
+
+objeto 3: teclado
+atributos: coneccion, tamanio, switches, velocidad de respuesta, color, iluminacion.
+acciones: accionar tecla, conectarlo, swithcear coneccion, 
