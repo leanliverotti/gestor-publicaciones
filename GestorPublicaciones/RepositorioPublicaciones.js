@@ -1,20 +1,16 @@
-import Publicacion from Publicacion.js;
-class RepositorioPublicaciones {
-    constructor(publicaciones) {
-        this.publicaciones = [publicaciones]
+export class RepositorioPublicaciones {
+    constructor() {
+        this.publicaciones = []
     }
-    agregar(Publicacion) {
-        todasPublicaciones.push(Publicacion)
+    agregar(publicacion) {
+        this.publicaciones.push(publicacion)
     }
-    
+
     buscarPorUsuario(nombre){
-        encontrado = publicaciones.filter((publicacion) => {
+        const encontrado = this.publicaciones.filter((publicacion) => {
             return publicacion.esDeAutor(nombre)
         }
         )
         return encontrado[0]
     }
 }
-
-
-
