@@ -76,6 +76,7 @@ console.log("\n=== JSON ===");
 const publicacionesJSON = JSON.stringify(publicaciones, null, 2);
 console.log(publicacionesJSON);
 
+<<<<<<< HEAD
 */
 import { Usuario }from './usuario.js'
 
@@ -87,6 +88,17 @@ const publuis = new Publicacion("Vendo apuntes de Algebra", "Apuntes completos d
 const pubana = new Publicacion("Busco companiero de grupo para Laboratorio", "Necesito un integrante mas para el TP del hilo conductor.", ana);
 const publucho = new Publicacion("Ofrezco clases particulares de JavaScript", "Clases online, una hora, nivel inicial e intermedio.", lucho);
 const pubana2 = new Publicacion("Vendo apuntes de Algebra", "Apuntes completos de la cursada 2025, con ejercicios resueltos.", ana);
+=======
+
+const luis = new usuario ("luis", "luis@gmail.com");
+const ana = new usuario ("ana", "ana@gmail.com");
+const lucho = new usuario ("lucho", "lucho@gmail.com");
+
+const publuis = new Publicacion("Vendo apuntes de Algebra", "Apuntes completos de la cursada 2025, con ejercicios resueltos.",luis);
+const pubana = new Publicacion("Busco companiero de grupo para Laboratorio", "Necesito un integrante mas para el TP del hilo conductor.", ana);
+const publucho = new Publicacion("Ofrezco clases particulares de JavaScript", "Clases online, una hora, nivel inicial e intermedio.", lucho);
+const pubana2 = new Publicacion ("Vendo apuntes de Algebra", "Apuntes completos de la cursada 2025, con ejercicios resueltos.", ana);
+>>>>>>> 425ae710257862b903be6cfecfe6dd6d0aea82bb
 
 const listaPublicaciones = [publuis, pubana, publucho, pubana2];
 
@@ -105,7 +117,11 @@ for (let index = 0; index < listaFiltrada.length; index++) {
 const elementoFind = listaPublicaciones.find((publicacion) => {
   return publicacion.esDeAutor(ana)
 })
+<<<<<<< HEAD
 console.log(elementoFind.mostrarResumen());
+=======
+console.log(elementoFind);
+>>>>>>> 425ae710257862b903be6cfecfe6dd6d0aea82bb
 
 
 
