@@ -13,7 +13,7 @@ export class Publicacion {
 
   // Devuelve un string corto combinando titulo y autor
   mostrarResumen() {
-    return `"${this.titulo}" - publicado por ${this.autor}`;
+    return `"${this.titulo}" - publicado por ${this.autor.mostrarPerfil()}`;
   }
 
   // Devuelve el valor del atributo activa
@@ -23,6 +23,9 @@ export class Publicacion {
 
   // Desafio opcional: true si el autor coincide con el nombre recibido
   esDeAutor(nombre) {
-    return this.autor === nombre;
+    return this.autor.obtenerNombre() === nombre ;
   }
+
 }
+
+
