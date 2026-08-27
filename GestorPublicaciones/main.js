@@ -1,4 +1,9 @@
+import { PublicacionServicio } from "./publicacionServicio.js";
+import { PublicacionVenta } from "./publicacionVenta.js";
 import { Publicacion } from "./Publicacion.js";
+import { Usuario }from './usuario.js'
+import { RepositorioPublicaciones } from './RepositorioPublicaciones.js'
+
 /*
 // Parte 3 - Instanciar y recorrer
 const publicaciones = [
@@ -75,10 +80,9 @@ publicaciones
 console.log("\n=== JSON ===");
 const publicacionesJSON = JSON.stringify(publicaciones, null, 2);
 console.log(publicacionesJSON);
-*/
 
-import { Usuario }from './usuario.js'
-import { RepositorioPublicaciones } from './RepositorioPublicaciones.js'
+
+
 
 const luis = new Usuario("luis", "luis@gmail.com");
 const ana = new Usuario("ana", "ana@gmail.com");
@@ -114,6 +118,22 @@ listaPublicaciones.forEach((publicacion) => repositorio.agregar(publicacion));
 console.log(repositorio.buscarPorUsuario("luis"));
 console.log(repositorio.buscarPorUsuario("ana"));
 console.log(repositorio.buscarPorUsuario("lucho"));
+*/
 
 
+
+const luis = new Usuario("luis", "luis@gmail.com");
+const ana = new Usuario("ana", "ana@gmail.com");
+const lucho = new Usuario("lucho", "lucho@gmail.com");
+
+const publuis = new Publicacion("Vendo apuntes de Algebra", "Apuntes completos de la cursada 2025, con ejercicios resueltos.", luis);
+const pubana = new Publicacion("Busco companiero de grupo para Laboratorio", "Necesito un integrante mas para el TP del hilo conductor.", ana);
+const publucho = new PublicacionVenta("Ofrezco clases particulares de JavaScript", "Clases online, una hora, nivel inicial e intermedio.", lucho);
+const pubana2 = new PublicacionServicio ("Vendo apuntes de Algebra", "Apuntes completos de la cursada 2025, con ejercicios resueltos.", ana);
+
+const listaPublicaciones = [publuis, pubana, publucho, pubana2];
+
+listaPublicaciones.forEach(p => {
+  console.log(p.mostrarResumen())
+});
 

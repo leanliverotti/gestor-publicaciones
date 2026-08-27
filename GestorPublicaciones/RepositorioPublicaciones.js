@@ -14,4 +14,14 @@ export class RepositorioPublicaciones {
         )
         return encontrado[0]
     }
+
+    listaResumen = () => {
+        this.publicaciones.map(publicaciones => publicaciones.mostrarResumen())
+    }
+
+    filtrarPorTipo(claseConstructor) {
+        this.publicaciones.filter(publicaciones => publicaciones instanceof claseConstructor)
+    }
 }
+
+
