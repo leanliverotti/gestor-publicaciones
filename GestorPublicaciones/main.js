@@ -121,7 +121,7 @@ console.log(repositorio.buscarPorUsuario("lucho"));
 */
 
 
-
+/*
 const luis = new Usuario("luis", "luis@gmail.com");
 const ana = new Usuario("ana", "ana@gmail.com");
 const lucho = new Usuario("lucho", "lucho@gmail.com");
@@ -136,4 +136,83 @@ const listaPublicaciones = [publuis, pubana, publucho, pubana2];
 listaPublicaciones.forEach(p => {
   console.log(p.mostrarResumen())
 });
+*/
 
+/* EJECUCION ASINCRONICA
+const luis = new Usuario("luis", "luis@gmail.com");
+const ana = new Usuario("ana", "ana@gmail.com");
+const lucho = new Usuario("lucho", "lucho@gmail.com");
+
+const publuis = new Publicacion("Vendo apuntes de Algebra", "Apuntes completos de la cursada 2025, con ejercicios resueltos.", luis);
+const pubana = new Publicacion("Busco companiero de grupo para Laboratorio", "Necesito un integrante mas para el TP del hilo conductor.", ana);
+const publucho = new publicacionVenta("Ofrezco clases particulares de JavaScript", "Clases online, una hora, nivel inicial e intermedio.", lucho);
+const pubana2 = new publicacionServicio("Vendo apuntes de Algebra", "Apuntes completos de la cursada 2025, con ejercicios resueltos.", ana);
+
+const listaPublicaciones = [publuis, pubana, publucho, pubana2];
+
+const repositorio = new RepositorioPublicaciones();
+
+repositorio.on("publicacion agregada", (Publicacion => {
+  console.log(`nueva publicacion ${Publicacion.agregarResumen()}`)
+}))
+
+let contador = 0;
+repositorio.on("publicacion agregada", () =>{
+  contador++;
+  console.log(`hay ${contador} publicaiones en total`)
+})
+
+repositorio.agregar(listaPublicaciones)
+
+function publicarConDemora(publicacion, callback){
+    setTimeout(() => {
+        callback(`${publicacion} publicacion añadida`)
+    }, 5000);
+}
+
+publicarConDemora(publuis, (mensaje) =>{
+console.log(mensaje)
+})
+console.log("subiendo otra publicacion")
+*/
+
+const luis = new Usuario("luis", "luis@gmail.com");
+const ana = new Usuario("ana", "ana@gmail.com");
+const lucho = new Usuario("lucho", "lucho@gmail.com");
+
+const publuis = new Publicacion("Vendo apuntes de Algebra", "Apuntes completos de la cursada 2025, con ejercicios resueltos.", luis);
+const pubana = new Publicacion("Busco companiero de grupo para Laboratorio", "Necesito un integrante mas para el TP del hilo conductor.", ana);
+const publucho = new publicacionVenta("Ofrezco clases particulares de JavaScript", "Clases online, una hora, nivel inicial e intermedio.", lucho);
+const pubana2 = new publicacionServicio("Vendo apuntes de Algebra", "Apuntes completos de la cursada 2025, con ejercicios resueltos.", ana);
+
+const listaPublicaciones = [publuis, pubana, publucho, pubana2];
+
+const repositorio = new RepositorioPublicaciones();
+
+repositorio.on("publicacion agregada", (Publicacion => {
+  console.log(`nueva publicacion ${Publicacion.agregarResumen()}`)
+}))
+
+let contador = 0;
+repositorio.on("publicacion agregada", () =>{
+  contador++;
+  console.log(`hay ${contador} publicaiones en total`)
+})
+
+repositorio.agregar(listaPublicaciones)
+
+function publicarSinDemora(publicacion){
+  return new Promise((resolve) =>{
+    setTimeout(() => {
+        resolve(`${publicacion} publicacion añadida`)
+    }, 5000);
+  })
+}
+
+async function publicacionSincronica(publuis) {
+  const mensaje = await publicarSinDemora(publuis)
+  console.log(mensaje)
+   console.log("subiendo otra publicacion")
+}
+
+publicacionSincronica()

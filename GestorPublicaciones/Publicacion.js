@@ -29,6 +29,12 @@ export class Publicacion {
   obtenerTitulo() {
     return this.titulo
   }
+
+    diasPublicada(){
+    const ms = new Date() - this.fechaPublicacion;
+    return Math.floor(ms / (1000 * 60 *60 *24));
+    
+  }
 }
 
 
