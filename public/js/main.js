@@ -1,9 +1,3 @@
-import { PublicacionServicio } from "./publicacionServicio.js";
-import { PublicacionVenta } from "./publicacionVenta.js";
-import { Publicacion } from "./Publicacion.js";
-import { Usuario }from './usuario.js'
-import { RepositorioPublicaciones } from './RepositorioPublicaciones.js'
-
 /*
 // Parte 3 - Instanciar y recorrer
 const publicaciones = [
@@ -176,6 +170,7 @@ console.log(mensaje)
 console.log("subiendo otra publicacion")
 */
 
+/* EJECUCION SINCRONICA
 const luis = new Usuario("luis", "luis@gmail.com");
 const ana = new Usuario("ana", "ana@gmail.com");
 const lucho = new Usuario("lucho", "lucho@gmail.com");
@@ -216,3 +211,15 @@ async function publicacionSincronica(publuis) {
 }
 
 publicacionSincronica()
+*/
+
+function observarEvento(evento) {
+  console.table({
+    type: evento.type,
+    target: evento.target.id,
+    currentTarget: evento.currentTarget.id,
+    timeStamp: Math.round(evento.timeStamp)
+  });
+}
+titulo.addEventListener("input", observarEvento);
+tipo.addEventListener("change", observarEvento);

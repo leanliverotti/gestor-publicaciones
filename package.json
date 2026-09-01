@@ -1,12 +1,24 @@
 {
-  "name": "ldaw",
+  "name": "gestor-publicaciones",
   "version": "1.0.0",
-  "description": "",
+  "description": "Trabajo practico de **7512 - Laboratorio de Desarrollo de Aplicaciones Web**.",
+  "homepage": "https://github.com/leanliverotti/gestor-publicaciones#readme",
+  "bugs": {
+    "url": "https://github.com/leanliverotti/gestor-publicaciones/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leanliverotti/gestor-publicaciones.git"
+  },
   "license": "ISC",
   "author": "",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start" : "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
   }
 }

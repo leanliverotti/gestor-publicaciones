@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publicaciones</title>
+</head>
+
+<body>
+    <form id="form-publicacion">
+        <input id="titulo" placeholder="Título" required>
+        <textarea id="descripcion" placeholder="Descripción"></textarea>
+        <input id="autor" placeholder="Nombre del autor" required>
+        <input id="email" type="email" placeholder="Email" required>
+        <select id="tipo">
+            <option value="venta">Venta</option>
+            <option value="servicio">Servicio</option>
+        </select>
+        <div id="campos-especificos"></div>
+        <button>Publicar</button>
+    </form>
+    <output id="vista-previa"></output>
+    <section id="lista-publicaciones"></section>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
