@@ -216,6 +216,7 @@ publicacionSincronica()
 const vistaPrevia = document.getElementById("vista-previa")
 const camposEspecificos = document.getElementById("campos-especificos")
 const tipo = document.getElementById("tipo")
+const ayudaEmail = document.getElementById("ayuda-email")
 
 function observarEvento(evento) {
   console.table({
@@ -252,3 +253,10 @@ function actualizarCamposEspecificos() {
 }
 tipo.addEventListener("change", actualizarCamposEspecificos);
 actualizarCamposEspecificos();
+
+function mostrarAyudaEmail() {
+  ayudaEmail.textContent = "Usá un email válido del autor";
+}
+function ocultarAyudaEmail() { ayudaEmail.textContent = ""; }
+email.addEventListener("focus", mostrarAyudaEmail);
+email.addEventListener("blur", ocultarAyudaEmail);
