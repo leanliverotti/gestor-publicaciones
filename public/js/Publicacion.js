@@ -26,6 +26,10 @@ export class Publicacion {
     return this.autor.obtenerNombre() === nombre ;
   }
 
+  darDeBaja() {
+    this.activa = false;
+  }
+
   obtenerTitulo() {
     return this.titulo
   }

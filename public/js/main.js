@@ -1,3 +1,7 @@
+import { Usuario } from "./usuario.js";
+import { PublicacionVenta } from "./publicacionVenta.js";
+import { PublicacionServicio } from "./publicacionServicio.js";
+
 /*
 // Parte 3 - Instanciar y recorrer
 const publicaciones = [
@@ -260,3 +264,59 @@ function mostrarAyudaEmail() {
 function ocultarAyudaEmail() { ayudaEmail.textContent = ""; }
 email.addEventListener("focus", mostrarAyudaEmail);
 email.addEventListener("blur", ocultarAyudaEmail);
+
+const formulario = document.getElementById("form-publicacion");
+const listaPublicaciones = document.getElementById("lista-publicaciones");
+const publicaciones = [];
+
+function crearPublicacionDesdeFormulario() {
+  const usuario = new Usuario(autor.value, email.value);
+
+  if (tipo.value === "venta") {
+    return new PublicacionVenta(
+      titulo.value, descripcion.value, usuario,
+      Number(document.querySelector("#precio").value)
+    );
+  }
+  return new PublicacionServicio(
+    titulo.value, descripcion.value, usuario,
+    document.querySelector("#modalidad").value,
+    Number(document.querySelector("#duracion").value)
+  );
+}
+
+function agregarTarjeta(publicacion) {
+  const tarjeta = document.createElement("article");
+  tarjeta.className = "tarjeta-publicacion";
+
+  const resumen = document.createElement("p");
+  resumen.textContent = publicacion.mostrarResumen();
+
+  const estado = document.createElement("span");
+  estado.textContent = "Activa";
+
+  const boton = document.createElement("button");
+  boton.textContent = "Dar de baja";
+
+  function manejarBaja(evento) {
+    console.log(evento.type, evento.target);
+    publicacion.darDeBaja();
+    estado.textContent = "Inactiva";
+    boton.disabled = true;
+  }
+  boton.addEventListener("click", manejarBaja);
+
+  tarjeta.append(resumen, estado, boton);
+  listaPublicaciones.appendChild(tarjeta);
+}
+
+function manejarEnvio(evento) {
+  evento.preventDefault();
+  const publicacion = crearPublicacionDesdeFormulario();
+  publicaciones.push(publicacion);
+  agregarTarjeta(publicacion);
+  formulario.reset();
+  actualizarCamposEspecificos();
+  actualizarVistaPrevia();
+}
+formulario.addEventListener("submit", manejarEnvio);
