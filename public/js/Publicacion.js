@@ -9,6 +9,7 @@ export class Publicacion {
     this.autor = autor;
     this.fechaPublicacion = new Date();
     this.activa = true;
+    this.destacado = false;
   }
 
   // Devuelve un string corto combinando titulo y autor
@@ -28,6 +29,14 @@ export class Publicacion {
 
   darDeBaja() {
     this.activa = false;
+  }
+
+  destacar() {
+    this.destacado = true;
+  }
+
+  opacar() {
+    this.destacado = false;
   }
 
   obtenerTitulo() {

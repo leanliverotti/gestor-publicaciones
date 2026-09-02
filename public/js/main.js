@@ -266,8 +266,9 @@ email.addEventListener("focus", mostrarAyudaEmail);
 email.addEventListener("blur", ocultarAyudaEmail);
 
 const formulario = document.getElementById("form-publicacion");
-const listaPublicaciones = document.getElementById("lista-publicaciones");
+const lista = document.getElementById("lista-publicaciones");
 const publicaciones = [];
+let proximoId = 1;
 
 function crearPublicacionDesdeFormulario() {
   const usuario = new Usuario(autor.value, email.value);
@@ -285,36 +286,56 @@ function crearPublicacionDesdeFormulario() {
   );
 }
 
-function agregarTarjeta(publicacion) {
-  const tarjeta = document.createElement("article");
-  tarjeta.className = "tarjeta-publicacion";
+function renderizarPublicaciones() {
+  lista.innerHTML = "";
+  publicaciones.forEach((publicacion) => {
+    const tarjeta = document.createElement("article");
+    tarjeta.dataset.id = publicacion.id;
 
-  const resumen = document.createElement("p");
-  resumen.textContent = publicacion.mostrarResumen();
+    const resumen = document.createElement("p");
+    resumen.textContent = publicacion.mostrarResumen();
 
-  const estado = document.createElement("span");
-  estado.textContent = "Activa";
+    const estado = document.createElement("span");
+    estado.textContent = publicacion.estaActiva() ? "Activa" : "Inactiva";
+    if (publicacion.destacado) estado.textContent += " - Destacada";
 
-  const boton = document.createElement("button");
-  boton.textContent = "Dar de baja";
+    const botonDestacar = document.createElement("button");
+    botonDestacar.dataset.accion = "destacar";
+    botonDestacar.textContent = "Destacar";
 
-  function manejarBaja(evento) {
-    console.log(evento.type, evento.target);
-    publicacion.darDeBaja();
-    estado.textContent = "Inactiva";
-    boton.disabled = true;
-  }
-  boton.addEventListener("click", manejarBaja);
+    const botonBaja = document.createElement("button");
+    botonBaja.dataset.accion = "baja";
+    botonBaja.textContent = "Dar de baja";
+    botonBaja.disabled = !publicacion.estaActiva();
 
-  tarjeta.append(resumen, estado, boton);
-  listaPublicaciones.appendChild(tarjeta);
+    tarjeta.append(resumen, estado, botonDestacar, botonBaja);
+    lista.appendChild(tarjeta);
+  });
 }
+
+function manejarAccion(evento) {
+  const boton = evento.target.closest("button[data-accion]");
+  if (!boton || !lista.contains(boton)) return;
+
+  const tarjeta = boton.closest("[data-id]");
+  const id = Number(tarjeta.dataset.id);
+  const publicacion = publicaciones.find((p) => p.id === id);
+  if (!publicacion) return;
+
+  const accion = boton.dataset.accion;
+  if (accion === "baja") publicacion.darDeBaja();
+  if (accion === "destacar") publicacion.destacar();
+
+  renderizarPublicaciones();
+}
+lista.addEventListener("click", manejarAccion);
 
 function manejarEnvio(evento) {
   evento.preventDefault();
   const publicacion = crearPublicacionDesdeFormulario();
+  publicacion.id = proximoId++;
   publicaciones.push(publicacion);
-  agregarTarjeta(publicacion);
+  renderizarPublicaciones();
   formulario.reset();
   actualizarCamposEspecificos();
   actualizarVistaPrevia();
