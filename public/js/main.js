@@ -221,6 +221,8 @@ const vistaPrevia = document.getElementById("vista-previa")
 const camposEspecificos = document.getElementById("campos-especificos")
 const tipo = document.getElementById("tipo")
 const ayudaEmail = document.getElementById("ayuda-email")
+const lista = document.getElementById("lista-publicaciones")
+
 
 function observarEvento(evento) {
   console.table({
@@ -285,18 +287,24 @@ function crearPublicacionDesdeFormulario() {
   );
 }
 
-function agregarTarjeta(publicacion) {
+function agregarTarjeta(publicacion, idTarjeta) {
   const tarjeta = document.createElement("article");
+  tarjeta.dataset.id = idTarjeta
   tarjeta.className = "tarjeta-publicacion";
 
   const resumen = document.createElement("p");
   resumen.textContent = publicacion.mostrarResumen();
 
   const estado = document.createElement("span");
+  estado.dataset.accion = "destacar"
   estado.textContent = "Activa";
 
   const boton = document.createElement("button");
+  boton.dataset.accion = "baja"
   boton.textContent = "Dar de baja";
+
+  const botonDestacar = document.createElement("button");
+  botonDestacar.textContent = "destacar";
 
   function manejarBaja(evento) {
     console.log(evento.type, evento.target);
@@ -304,19 +312,45 @@ function agregarTarjeta(publicacion) {
     estado.textContent = "Inactiva";
     boton.disabled = true;
   }
-  boton.addEventListener("click", manejarBaja);
 
-  tarjeta.append(resumen, estado, boton);
+  function manejarDestacado() {
+    publicacion.destacar();
+  }
+
+  tarjeta.append(resumen, estado, boton, botonDestacar);
   listaPublicaciones.appendChild(tarjeta);
 }
 
 function manejarEnvio(evento) {
   evento.preventDefault();
   const publicacion = crearPublicacionDesdeFormulario();
+  const idTarjeta = publicaciones.length
   publicaciones.push(publicacion);
-  agregarTarjeta(publicacion);
+  agregarTarjeta(publicacion, idTarjeta);
   formulario.reset();
   actualizarCamposEspecificos();
   actualizarVistaPrevia();
 }
 formulario.addEventListener("submit", manejarEnvio);
+
+function observarClick(evento) {
+  console.log("target", evento.target);
+  console.log("currentTarget", evento.currentTarget);
+}
+lista.addEventListener("click", observarClick)
+
+function manejarAccion(evento) {
+  const boton = evento.target.closest("button[data-accion]");
+  if (!boton || !lista.contains(boton)) return;
+  const tarjeta = boton.closest("[data-id]");
+  const id = Number(tarjeta.dataset.id);
+  console.log(id, boton.dataset.accion);
+  if (boton.dataset.accion === "baja") publicaciones[id].darDeBaja();
+  if (boton.dataset.accion === "destacar") publicaciones[id].destacar();
+  //renderizarPublicaciones();
+
+}
+
+lista.addEventListener("click", manejarAccion);
+
+

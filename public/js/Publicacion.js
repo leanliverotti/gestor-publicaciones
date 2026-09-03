@@ -3,12 +3,14 @@
 
 export class Publicacion {
   // Atributos: titulo, descripcion, autor, fechaPublicacion, activa
-  constructor(titulo, descripcion, autor) {
+  constructor(titulo, descripcion, autor, ) {
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.autor = autor;
     this.fechaPublicacion = new Date();
     this.activa = true;
+    this.destacado = false;
+  
   }
 
   // Devuelve un string corto combinando titulo y autor
@@ -37,7 +39,10 @@ export class Publicacion {
     diasPublicada(){
     const ms = new Date() - this.fechaPublicacion;
     return Math.floor(ms / (1000 * 60 *60 *24));
-    
+  }
+
+  destacar(){
+
   }
 }
 
