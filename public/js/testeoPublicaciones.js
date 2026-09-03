@@ -1,13 +1,15 @@
-import { publicacionServicio } from "./publicacionServicio.js";
-import { publicacionVenta } from "./publicacionVenta.js";
+import { PublicacionServicio } from "./publicacionServicio.js";
+import { PublicacionVenta } from "./publicacionVenta.js";
 import { Publicacion } from "./Publicacion.js";
+import { Usuario } from "./usuario.js";
 
-const p1 = new publicacionVenta ("vendo resumenes de historia", "de la pagina 10 a la 58",  "angel", 5000)
+const angel = new Usuario("angel", "angel@gmail.com")
+const joaquin = new Usuario("joaquin", "joaquin@gmail.com")
 
-const p2 = new publicacionServicio ("doy clases avanzadas de matematicas", "solo los sabados y domingos", "joaquin", "presencial", "dos horas")
+const p1 = new PublicacionVenta("vendo resumenes de historia", "de la pagina 10 a la 58", angel, 5000)
 
-const publicaciones = [p1,p2];
+const p2 = new PublicacionServicio("doy clases avanzadas de matematicas", "solo los sabados y domingos", joaquin, "presencial", 120)
+
+const publicaciones = [p1, p2];
 
 publicaciones.forEach(publicacion => (console.log(publicacion instanceof Publicacion)));
-
-

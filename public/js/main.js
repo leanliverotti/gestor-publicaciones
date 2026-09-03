@@ -1,6 +1,7 @@
 import { Usuario } from "./usuario.js";
 import { PublicacionVenta } from "./publicacionVenta.js";
 import { PublicacionServicio } from "./publicacionServicio.js";
+import { RepositorioPublicaciones } from "./RepositorioPublicaciones.js";
 
 /*
 // Parte 3 - Instanciar y recorrer
@@ -267,8 +268,9 @@ email.addEventListener("blur", ocultarAyudaEmail);
 
 const formulario = document.getElementById("form-publicacion");
 const lista = document.getElementById("lista-publicaciones");
-const publicaciones = [];
-let proximoId = 1;
+
+// Las publicaciones viven en el repositorio del dominio, no en un array suelto de la vista.
+const repositorio = new RepositorioPublicaciones();
 
 function crearPublicacionDesdeFormulario() {
   const usuario = new Usuario(autor.value, email.value);
@@ -288,7 +290,7 @@ function crearPublicacionDesdeFormulario() {
 
 function renderizarPublicaciones() {
   lista.innerHTML = "";
-  publicaciones.forEach((publicacion) => {
+  repositorio.listar().forEach((publicacion) => {
     const tarjeta = document.createElement("article");
     tarjeta.dataset.id = publicacion.id;
 
@@ -299,9 +301,10 @@ function renderizarPublicaciones() {
     estado.textContent = publicacion.estaActiva() ? "Activa" : "Inactiva";
     if (publicacion.destacado) estado.textContent += " - Destacada";
 
+    // El mismo boton alterna entre destacar() y opacar() segun el estado del objeto.
     const botonDestacar = document.createElement("button");
-    botonDestacar.dataset.accion = "destacar";
-    botonDestacar.textContent = "Destacar";
+    botonDestacar.dataset.accion = publicacion.destacado ? "opacar" : "destacar";
+    botonDestacar.textContent = publicacion.destacado ? "Quitar destacado" : "Destacar";
 
     const botonBaja = document.createElement("button");
     botonBaja.dataset.accion = "baja";
@@ -319,12 +322,13 @@ function manejarAccion(evento) {
 
   const tarjeta = boton.closest("[data-id]");
   const id = Number(tarjeta.dataset.id);
-  const publicacion = publicaciones.find((p) => p.id === id);
+  const publicacion = repositorio.buscarPorId(id);
   if (!publicacion) return;
 
   const accion = boton.dataset.accion;
   if (accion === "baja") publicacion.darDeBaja();
   if (accion === "destacar") publicacion.destacar();
+  if (accion === "opacar") publicacion.opacar();
 
   renderizarPublicaciones();
 }
@@ -333,11 +337,82 @@ lista.addEventListener("click", manejarAccion);
 function manejarEnvio(evento) {
   evento.preventDefault();
   const publicacion = crearPublicacionDesdeFormulario();
-  publicacion.id = proximoId++;
-  publicaciones.push(publicacion);
+  repositorio.agregar(publicacion);
   renderizarPublicaciones();
   formulario.reset();
   actualizarCamposEspecificos();
   actualizarVistaPrevia();
 }
 formulario.addEventListener("submit", manejarEnvio);
+
+/* Parte 1 - Observar la propagacion
+function observarClick(evento) {
+  console.log("target", evento.target);
+  console.log("currentTarget", evento.currentTarget);
+}
+lista.addEventListener("click", observarClick);
+
+// Clic en la tarjeta (article): target = el article (o el elemento exacto tocado), currentTarget = lista.
+// Clic en el texto (p/span): target = ese elemento de texto, currentTarget sigue siendo lista.
+// Clic en el boton: target = el button, currentTarget sigue siendo lista.
+// Lo que CAMBIA es target (el elemento real donde se origino el clic).
+// Lo que se MANTIENE igual es currentTarget (el elemento donde esta enganchado el listener, "lista").
+
+lista.removeEventListener("click", observarClick);
+// Al remover con la misma referencia de funcion, los clics dejan de loguearse en consola.
+// Esto solo funciona porque observarClick es una funcion con nombre guardada en una variable;
+// una arrow function anonima no se podria remover asi.
+*/
+
+/* Parte 6 - Decidir sobre la propagacion
+function avisarTarjeta(evento) {
+  console.log("listener de la tarjeta, currentTarget:", evento.currentTarget);
+}
+function pruebaStopPropagation(evento) {
+  evento.stopPropagation();
+  console.log("click en boton individual, propagacion detenida");
+}
+
+// Hay que engancharlo DESPUES de cada render: renderizarPublicaciones() borra y
+// recrea las tarjetas, asi que correrlo al cargar la pagina no engancha nada
+// (en ese momento la lista todavia esta vacia).
+function engancharPruebaPropagacion() {
+  lista.querySelectorAll("article").forEach((tarjeta) => {
+    tarjeta.addEventListener("click", avisarTarjeta);
+  });
+  lista.querySelectorAll("button[data-accion]").forEach((boton) => {
+    boton.addEventListener("click", pruebaStopPropagation);
+  });
+}
+
+// Con stopPropagation() en el boton, el evento nunca burbujea hasta "lista", asi que
+// manejarAccion() (el listener delegado) no se ejecuta para ese clic: destacar/dar de baja dejan de funcionar.
+// Por eso se retira despues de probarlo: la delegacion necesita que el evento burbujee libremente.
+*/
+
+// Parte 7 - Depuracion (tres problemas encontrados en el codigo de ejemplo)
+// 1) lista.addEventListener("click", manejarAccion());
+//    Ejecucion inmediata: los parentesis llaman a manejarAccion() en el momento (con evento undefined)
+//    y lo que se registra como listener es su valor de retorno (undefined), no la funcion.
+//    Correccion: lista.addEventListener("click", manejarAccion);
+//
+// 2) lista.addEventListener("click", evento => manejarAccion(evento));
+//    Registro duplicado: si se ejecuta junto con otra linea que tambien registra el click en "lista",
+//    queda mas de un listener escuchando el mismo evento y manejarAccion se dispara varias veces por clic.
+//
+// 3) lista.removeEventListener("click", evento => manejarAccion(evento));
+//    Referencia distinta: cada "evento => manejarAccion(evento)" crea una funcion anonima nueva.
+//    removeEventListener solo saca un listener si recibe la MISMA referencia usada en addEventListener,
+//    y esta no lo es, asi que no elimina nada. Para poder quitarlo despues hay que guardar la funcion
+//    en una variable y pasar esa misma referencia tanto a addEventListener como a removeEventListener.
+
+// Autoevaluacion de cierre
+// - Cuando usaria preventDefault(): cuando quiero manejar el submit del formulario con JS
+//   (crear la publicacion, validar datos, etc.) sin que el navegador recargue la pagina ni cambie la URL.
+// - Diferencia entre target y currentTarget: target es el elemento exacto donde el usuario hizo clic
+//   (puede ser un hijo interno, como el texto o el boton); currentTarget es el elemento donde esta
+//   enganchado el listener que se esta ejecutando (aca, siempre "lista", gracias a la delegacion).
+// - Por que la delegacion resiste un nuevo render: el listener esta registrado una sola vez en "lista",
+//   que nunca se destruye. Aunque renderizarPublicaciones() borre y recree las tarjetas de adentro
+//   (lista.innerHTML = ""), los clics en los elementos nuevos igual burbujean hasta "lista",
+//   asi que no hace falta volver a registrar el listener despues de cada render.
