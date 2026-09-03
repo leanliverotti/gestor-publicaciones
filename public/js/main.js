@@ -246,14 +246,14 @@ tipo.addEventListener("change", actualizarVistaPrevia);
 function actualizarCamposEspecificos() {
   if (tipo.value === "venta") {
     camposEspecificos.innerHTML = `
-      <input id="precio" type="number" placeholder="Precio">
-      <input id="stock" type="number" value="1">`;
+      <input id="precio" type="number" placeholder="Precio" required min="0">
+      <input id="stock" type="number" value="1" required min="0">`;
   } else {
     camposEspecificos.innerHTML = `
       <select id="modalidad">
         <option>presencial</option><option>virtual</option>
       </select>
-      <input id="duracion" type="number" placeholder="Minutos">`;
+      <input id="duracion" type="number" placeholder="Minutos" required min="0">`;
   }
 }
 tipo.addEventListener("change", actualizarCamposEspecificos);
@@ -278,7 +278,8 @@ function crearPublicacionDesdeFormulario() {
   if (tipo.value === "venta") {
     return new PublicacionVenta(
       titulo.value, descripcion.value, usuario,
-      Number(document.querySelector("#precio").value)
+      Number(document.querySelector("#precio").value),
+      Number(document.querySelector("#stock").value)
     );
   }
   return new PublicacionServicio(

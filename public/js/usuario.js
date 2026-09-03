@@ -6,7 +6,7 @@ export class Usuario {
   }
 
   mostrarPerfil(){
-   return `este es el perfin de ${this.nombre}, su correo es ${this.email}`
+   return `este es el perfil de ${this.nombre}, su correo es ${this.email}`
   }
 
   obtenerNombre(){
