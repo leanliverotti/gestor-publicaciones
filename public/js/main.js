@@ -222,6 +222,10 @@ const camposEspecificos = document.getElementById("campos-especificos")
 const tipo = document.getElementById("tipo")
 const ayudaEmail = document.getElementById("ayuda-email")
 const lista = document.getElementById("lista-publicaciones")
+const botonActualizar = document.getElementById("botonActualizar")
+const estadoActualizar = document.getElementById("estadoActualizar")
+const errorTitulo = document.getElementById("errorTitulo")
+const titulo = document.getElementById("titulo")
 
 
 function observarEvento(evento) {
@@ -330,6 +334,7 @@ function manejarEnvio(evento) {
   formulario.reset();
   actualizarCamposEspecificos();
   actualizarVistaPrevia();
+  renderizarPublicaciones()
 }
 formulario.addEventListener("submit", manejarEnvio);
 
@@ -347,10 +352,71 @@ function manejarAccion(evento) {
   console.log(id, boton.dataset.accion);
   if (boton.dataset.accion === "baja") publicaciones[id].darDeBaja();
   if (boton.dataset.accion === "destacar") publicaciones[id].destacar();
-  //renderizarPublicaciones();
+  renderizarPublicaciones();
 
 }
 
 lista.addEventListener("click", manejarAccion);
 
+function esperar(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+}
 
+console.log(esperar(1000).then( () => {
+  console.log("promesa devuelta")
+}))
+
+async function cargarPublicaciones(forzarError = false) {
+  estadoActualizar.textContent = "Cargando publicaciones...";
+  botonActualizar.disabled = true;
+  try {
+    const url = forzarError ? "/api/publicaciones?error=1" : "/api/publicaciones";
+    const respuesta = await fetch(url);
+    if (!respuesta.ok) throw new Error("La respuesta no fue exitosa");
+    const datos = await respuesta.json();
+   // repositorio.cargarDesde(datos);
+    renderizarPublicaciones();
+    console.log(datos)
+    estadoActualizar.textContent = `${datos.length} publicaciones recibidas`;
+  } catch (error) {
+    estadoActualizar.textContent = `Error: ${error.message}`;
+  } finally {
+    botonActualizar.disabled = false;
+  }
+}
+
+function renderizarPublicaciones() {
+  //iterar sobre las tarjetas de listaPublicaciones
+  //cada tarjeta tiene un id --> asociar con el arreglo de publicaciones. id tarjeta == index publicaciones
+  //si la publiacion esta activa entonces --> tarjeta.estado = "Activa" SINO tarjeta.estadp = "Inactiva"
+  for (let tarjeta of listaPublicaciones.children) {
+    console.log(tarjeta)
+    const index = tarjeta.dataset.id
+    const estado = tarjeta.querySelector("span")
+    if(publicaciones[index].estaActiva()){
+      estado.textContent = "activa"
+    }else{
+      estado.textContent = "inactiva"
+    }
+  }
+}
+
+botonActualizar.addEventListener("click", cargarPublicaciones)
+
+function validarTitulo(mostrarError = true) {
+  const valido = titulo.value.trim().length >= 5;
+  titulo.classList.toggle("valido", valido);
+  titulo.classList.toggle("invalido", !valido && mostrarError);
+  errorTitulo.textContent = !valido && mostrarError
+    ? "Ingrese al menos 5 caracteres" : "";
+  return valido;
+}
+ 
+titulo.addEventListener("input", () => validarTitulo(false));
+titulo.addEventListener("blur", () => validarTitulo(true));
+
+function validarAutor(){}
+
+function validarPrecio(){}

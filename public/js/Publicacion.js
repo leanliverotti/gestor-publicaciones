@@ -42,7 +42,11 @@ export class Publicacion {
   }
 
   destacar(){
+   this.destacado = true;
+  }
 
+  estaDestacado(){
+    return this.destacado;
   }
 }
 
