@@ -10,6 +10,7 @@ export class Publicacion {
     this.fechaPublicacion = new Date();
     this.activa = true;
     this.destacado = false;
+    this.etiquetas = []
   
   }
 
@@ -48,6 +49,23 @@ export class Publicacion {
   estaDestacado(){
     return this.destacado;
   }
+
+  agregarEtiqueta(etiqueta) {
+    const normalizada = etiqueta.trim();
+    if (!normalizada) {
+      throw new Error("Etiqueta inválida");
+    }
+    const yaExiste = this.tieneEtiqueta(normalizada);
+    if (!yaExiste) {
+      this.etiquetas.push(normalizada);
+    }
+  }
+ 
+  tieneEtiqueta(etiqueta) {
+    const buscada = etiqueta.trim().toLowerCase();
+    return this.etiquetas.some(e => e.toLowerCase() === buscada);
+  }
+
 }
 
 

@@ -226,7 +226,9 @@ const botonActualizar = document.getElementById("botonActualizar")
 const estadoActualizar = document.getElementById("estadoActualizar")
 const errorTitulo = document.getElementById("errorTitulo")
 const titulo = document.getElementById("titulo")
-
+const autor = document.getElementById("autor")
+const errorAutor = document.getElementById("errorAutor")
+const 
 
 function observarEvento(evento) {
   console.table({
@@ -240,18 +242,18 @@ titulo.addEventListener("input", observarEvento);
 tipo.addEventListener("change", observarEvento);
 
 function actualizarVistaPrevia() {
-  const nombre = autor.value || "Autor";
-  const texto = titulo.value || "Sin título";
-  vistaPrevia.textContent = `${texto} — ${nombre} (${tipo.value})`;
-}
-titulo.addEventListener("input", actualizarVistaPrevia);
-autor.addEventListener("input", actualizarVistaPrevia);
-tipo.addEventListener("change", actualizarVistaPrevia);
+  contador.textContent = contenido.value.length;
+  vista.textContent = `${titulo.value || "Sin título"} — ` +
+    `${autor.value || "..."} (${tipo.value})`;
+} 
+[titulo, autor, contenido, tipo].forEach(control => control.addEventListener("input", actualizarVistaPrevia));
+
 
 function actualizarCamposEspecificos() {
   if (tipo.value === "venta") {
     camposEspecificos.innerHTML = `
       <input id="precio" type="number" placeholder="Precio">
+      <span id="errorPrecio"></span>
       <input id="stock" type="number" value="1">`;
   } else {
     camposEspecificos.innerHTML = `
@@ -325,16 +327,24 @@ function agregarTarjeta(publicacion, idTarjeta) {
   listaPublicaciones.appendChild(tarjeta);
 }
 
-function manejarEnvio(evento) {
+async function manejarEnvio(evento) {
   evento.preventDefault();
-  const publicacion = crearPublicacionDesdeFormulario();
-  const idTarjeta = publicaciones.length
-  publicaciones.push(publicacion);
-  agregarTarjeta(publicacion, idTarjeta);
-  formulario.reset();
-  actualizarCamposEspecificos();
-  actualizarVistaPrevia();
-  renderizarPublicaciones()
+  if (!validarTitulo(true)) return;
+  enviar.disabled = true;
+  estado.textContent = "Publicando...";
+  try {
+    await esperar(800);
+    const publicacion = crearPublicacionDesdeFormulario();
+    repositorio.agregar(publicacion);
+    renderizarPublicaciones();
+    estado.textContent = "Publicación agregada";
+    formulario.reset();
+    actualizarVistaPrevia();
+  } catch (error) {
+    estado.textContent = `Error: ${error.message}`;
+  } finally {
+    actualizarEstadoFormulario();
+  }
 }
 formulario.addEventListener("submit", manejarEnvio);
 
@@ -417,6 +427,33 @@ function validarTitulo(mostrarError = true) {
 titulo.addEventListener("input", () => validarTitulo(false));
 titulo.addEventListener("blur", () => validarTitulo(true));
 
-function validarAutor(){}
+function validarAutor(mostrarError = true){
+  const valido = autor.value.trim().length >= 3;
+  autor.classList.toggle("valido", valido);
+  autor.classList.toggle("invalido", !valido && mostrarError);
+  errorAutor.textContent = !valido && mostrarError
+    ? "Ingrese al menos 3 caracteres" : "";
+  return valido;
+}
 
-function validarPrecio(){}
+function validarPrecio(){
+  const valido = autor.value.trim().length >= 3;
+  precio.classList.toggle("valido", valido);
+ precio.classList.toggle("invalido", !valido && mostrarError);
+  errorprecio.textContent = !valido && mostrarError
+    ? "Ingrese al menos 1 caracter" : "";
+  return valido;
+}
+
+function formularioValido() {
+  const precioValido = tipo.value !== "venta" || Number(precio.value) > 0;
+  return titulo.value.trim().length >= 5
+    && autor.value.trim().length >= 3
+    && precioValido;
+}
+ 
+function actualizarEstadoFormulario() {
+  enviar.disabled = !formularioValido();
+}
+ 
+formulario.addEventListener("input", actualizarEstadoFormulario);

@@ -24,6 +24,12 @@ export class RepositorioPublicaciones extends EventEmitter{
     filtrarPorTipo(claseConstructor) {
         this.publicaciones.filter(publicaciones => publicaciones instanceof claseConstructor)
     }
+     
+    buscarPorEtiqueta(etiqueta) {
+    return this.publicaciones.filter(publicacion =>
+      publicacion.activa && publicacion.tieneEtiqueta(etiqueta)
+    );
+  }
 }
 
 
