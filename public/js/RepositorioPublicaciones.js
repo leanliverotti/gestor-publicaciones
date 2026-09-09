@@ -60,4 +60,12 @@ export class RepositorioPublicaciones extends EventEmitter {
       (publicacion) => publicacion instanceof claseConstructor
     );
   }
+
+  // Solo publicaciones activas: una publicacion dada de baja deja de aparecer
+  // aunque conserve la etiqueta.
+  buscarPorEtiqueta(etiqueta) {
+    return this.publicaciones.filter(
+      (publicacion) => publicacion.activa && publicacion.tieneEtiqueta(etiqueta)
+    );
+  }
 }

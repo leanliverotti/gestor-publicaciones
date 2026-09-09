@@ -15,6 +15,7 @@ export class Publicacion {
     this.fechaPublicacion = new Date();
     this.activa = true;
     this.destacado = false;
+    this.etiquetas = [];
   }
 
   // Devuelve un string corto combinando titulo y autor
@@ -57,7 +58,24 @@ export class Publicacion {
     diasPublicada(){
     const ms = new Date() - this.fechaPublicacion;
     return Math.floor(ms / (1000 * 60 *60 *24));
-    
+
+  }
+
+  // Agrega una etiqueta nueva, recortando espacios y evitando duplicados
+  // (comparando sin importar mayusculas/minusculas).
+  agregarEtiqueta(etiqueta) {
+    const normalizada = etiqueta.trim();
+    if (!normalizada) {
+      throw new Error("Etiqueta inválida");
+    }
+    if (!this.tieneEtiqueta(normalizada)) {
+      this.etiquetas.push(normalizada);
+    }
+  }
+
+  tieneEtiqueta(etiqueta) {
+    const buscada = etiqueta.trim().toLowerCase();
+    return this.etiquetas.some((e) => e.toLowerCase() === buscada);
   }
 }
 
