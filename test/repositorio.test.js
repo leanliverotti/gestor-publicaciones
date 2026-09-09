@@ -33,4 +33,5 @@ describe("RepositorioPublicaciones", () => {
   expect(venta.mostrarResumen()).toContain("$5000");
   expect(servicio.mostrarResumen()).toContain("Clases de Álgebra");
 });
+
 });
