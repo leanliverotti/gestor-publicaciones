@@ -22,6 +22,12 @@ export class Publicacion {
     return `"${this.titulo}" - publicado por ${this.autor.mostrarPerfil()}`;
   }
 
+  // Sintesis de una linea para la vista previa del formulario: autor, titulo y estado
+  get resumen() {
+    const estado = this.activa ? "activa" : "inactiva";
+    return `${this.autor.obtenerNombre()} - ${this.titulo} (${estado})`;
+  }
+
   // Devuelve el valor del atributo activa
   estaActiva() {
     return this.activa;

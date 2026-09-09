@@ -10,17 +10,23 @@
 <body>
     <form id="form-publicacion">
         <input id="titulo" placeholder="Título" required>
+        <small id="error-titulo"></small>
         <textarea id="descripcion" placeholder="Descripción"></textarea>
+        <span id="contador">0</span>
         <input id="autor" placeholder="Nombre del autor" required>
+        <small id="error-autor"></small>
         <input id="email"  type="email" placeholder="Email" required> <small id="ayuda-email"></small>
         <select id="tipo">
             <option value="venta">Venta</option>
             <option value="servicio">Servicio</option>
         </select>
         <div id="campos-especificos"></div>
-        <button>Publicar</button>
+        <button id="enviar" disabled>Publicar</button>
     </form>
     <output id="vista-previa"></output>
+    <p id="estado"></p>
+    <button id="boton-actualizar" type="button">Actualizar</button>
+    <button id="boton-forzar-error" type="button">Forzar error</button>
     <section id="lista-publicaciones"></section>
     <script type="module" src="js/main.js"></script>
 </body>
