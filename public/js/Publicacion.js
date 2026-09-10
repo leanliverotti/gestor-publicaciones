@@ -1,6 +1,8 @@
 // Clase Publicacion: modela un aviso de la comunidad estudiantil
 // (ej: "vendo apuntes", "busco companiero de grupo", "ofrezco clases particulares")
 
+import { Reporte } from "./Reporte.js";
+
 export class Publicacion {
   // Contador que comparten la clase y todas sus subclases: cada publicacion se
   // asigna su propio id al crearse, en vez de que se lo ponga el DOM desde afuera.
@@ -16,6 +18,8 @@ export class Publicacion {
     this.activa = true;
     this.destacado = false;
     this.etiquetas = [];
+    this.reportes = [];
+    this.estado = "pendiente";
   }
 
   // Devuelve un string corto combinando titulo y autor
@@ -76,6 +80,35 @@ export class Publicacion {
   tieneEtiqueta(etiqueta) {
     const buscada = etiqueta.trim().toLowerCase();
     return this.etiquetas.some((e) => e.toLowerCase() === buscada);
+  }
+
+  // Un mismo usuario no puede reportar dos veces la misma publicacion.
+  reportar(usuario, motivo) {
+    const yaReporto = this.reportes.some((r) => r.usuario === usuario);
+    if (yaReporto) {
+      throw new Error("El usuario ya reportó esta publicación");
+    }
+    this.reportes.push(new Reporte(usuario, motivo));
+  }
+
+  requiereRevision() {
+    return this.reportes.length >= 3;
+  }
+
+  // Consulta a un colaborador externo (el servicio de moderacion) y recien
+  // actualiza this.estado cuando esa consulta se resuelve. Si el servicio
+  // rechaza la promesa, el catch nunca llega a tocar this.estado y la
+  // publicacion queda como estaba: "pendiente".
+  async revisar(servicioModeracion) {
+    const decision = await servicioModeracion.evaluar(this);
+    if (decision === "aprobado") {
+      this.estado = "aprobada";
+    } else if (decision === "rechazado") {
+      this.estado = "rechazada";
+    } else {
+      throw new Error("Decisión de moderación inválida");
+    }
+    return this.estado;
   }
 }
 

@@ -68,4 +68,11 @@ export class RepositorioPublicaciones extends EventEmitter {
       (publicacion) => publicacion.activa && publicacion.tieneEtiqueta(etiqueta)
     );
   }
+
+  // Solo publicaciones activas que ya juntaron los reportes suficientes.
+  pendientesDeRevision() {
+    return this.publicaciones.filter(
+      (publicacion) => publicacion.activa && publicacion.requiereRevision()
+    );
+  }
 }
