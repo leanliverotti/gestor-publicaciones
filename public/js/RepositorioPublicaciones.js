@@ -1,78 +1,44 @@
 import { EventEmitter } from "./EventEmitter.js";
-import { Usuario } from "./usuario.js";
 import { Publicacion } from "./Publicacion.js";
-import { PublicacionVenta } from "./publicacionVenta.js";
-import { PublicacionServicio } from "./publicacionServicio.js";
 
 export class RepositorioPublicaciones extends EventEmitter {
   constructor() {
     super();
     this.publicaciones = [];
+    this.proximoId = 1;
   }
 
-  agregar(publicacion) {
+  agregar(autor, titulo, descripcion, categoria) {
+    const publicacion = autor instanceof Publicacion ? autor : new Publicacion(this.proximoId++, autor, titulo, descripcion, categoria);
+    if (autor instanceof Publicacion) this.proximoId = Math.max(this.proximoId, publicacion.id + 1);
     this.publicaciones.push(publicacion);
     this.emit("publicacionAgregada", publicacion);
-  }
-
-  // Reconstruye instancias reales a partir de los datos planos que llegan del
-  // servidor: sin esto quedarian objetos JSON sueltos, sin los metodos del dominio.
-  cargarDesde(datos) {
-    this.publicaciones = datos.map((dato) => this.instanciarDesdeDato(dato));
-  }
-
-  instanciarDesdeDato(dato) {
-    const autor = new Usuario(dato.autorNombre, dato.autorEmail);
-    let publicacion;
-
-    if (dato.tipo === "venta") {
-      publicacion = new PublicacionVenta(dato.titulo, dato.descripcion, autor, dato.precio, dato.stock);
-    } else if (dato.tipo === "servicio") {
-      publicacion = new PublicacionServicio(dato.titulo, dato.descripcion, autor, dato.modalidad, dato.duracionMinutos);
-    } else {
-      publicacion = new Publicacion(dato.titulo, dato.descripcion, autor);
-    }
-
-    publicacion.id = dato.id;
-    publicacion.activa = dato.activa;
-    publicacion.destacado = dato.destacado;
     return publicacion;
   }
 
-  listar() {
-    return this.publicaciones;
+  listar() { return [...this.publicaciones]; }
+  buscarPorId(id) { return this.publicaciones.find((publicacion) => publicacion.id === Number(id)); }
+  buscarPorUsuario(nombre) { return this.publicaciones.find((publicacion) => publicacion.esDeAutor(nombre)); }
+  listaResumen() { return this.publicaciones.map((publicacion) => publicacion.mostrarResumen()); }
+  filtrarPorTipo(claseConstructor) { return this.publicaciones.filter((publicacion) => publicacion instanceof claseConstructor); }
+  buscarPorEtiqueta(etiqueta) { return this.publicaciones.filter((publicacion) => publicacion.activa && publicacion.tieneEtiqueta(etiqueta)); }
+  pendientesDeRevision() { return this.publicaciones.filter((publicacion) => publicacion.activa && publicacion.requiereRevision()); }
+  obtenerEstado() { return `Publicaciones activas: ${this.publicaciones.filter((p) => p.activa).length}`; }
+  obtenerEstadoInactivas() { return `Publicaciones inactivas: ${this.publicaciones.filter((p) => !p.activa).length}`; }
+
+  actualizar(id, cambios) {
+    const anterior = this.buscarPorId(id);
+    if (!anterior) throw new Error("Publicación inexistente");
+    const actualizada = new Publicacion(anterior.id, cambios.autor ?? anterior.autor, cambios.titulo ?? anterior.titulo, cambios.descripcion ?? anterior.descripcion, cambios.categoria ?? anterior.categoria);
+    Object.assign(actualizada, { activa: anterior.activa, destacado: anterior.destacado, etiquetas: anterior.etiquetas, reportes: anterior.reportes, estado: anterior.estado, fechaPublicacion: anterior.fechaPublicacion });
+    this.publicaciones[this.publicaciones.indexOf(anterior)] = actualizada;
+    return actualizada;
   }
 
-  buscarPorId(id) {
-    return this.publicaciones.find((publicacion) => publicacion.id === id);
-  }
-
-  buscarPorUsuario(nombre) {
-    return this.publicaciones.find((publicacion) => publicacion.esDeAutor(nombre));
-  }
-
-  listaResumen() {
-    return this.publicaciones.map((publicacion) => publicacion.mostrarResumen());
-  }
-
-  filtrarPorTipo(claseConstructor) {
-    return this.publicaciones.filter(
-      (publicacion) => publicacion instanceof claseConstructor
-    );
-  }
-
-  // Solo publicaciones activas: una publicacion dada de baja deja de aparecer
-  // aunque conserve la etiqueta.
-  buscarPorEtiqueta(etiqueta) {
-    return this.publicaciones.filter(
-      (publicacion) => publicacion.activa && publicacion.tieneEtiqueta(etiqueta)
-    );
-  }
-
-  // Solo publicaciones activas que ya juntaron los reportes suficientes.
-  pendientesDeRevision() {
-    return this.publicaciones.filter(
-      (publicacion) => publicacion.activa && publicacion.requiereRevision()
-    );
+  eliminar(id) {
+    const publicacion = this.buscarPorId(id);
+    if (!publicacion) return false;
+    this.publicaciones.splice(this.publicaciones.indexOf(publicacion), 1);
+    return true;
   }
 }

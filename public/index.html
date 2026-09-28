@@ -1,33 +1,32 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Publicaciones</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestor de publicaciones</title>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
-
 <body>
-    <form id="form-publicacion">
-        <input id="titulo" placeholder="Título" required>
-        <small id="error-titulo"></small>
-        <textarea id="descripcion" placeholder="Descripción"></textarea>
-        <span id="contador">0</span>
-        <input id="autor" placeholder="Nombre del autor" required>
-        <small id="error-autor"></small>
-        <input id="email"  type="email" placeholder="Email" required> <small id="ayuda-email"></small>
-        <select id="tipo">
-            <option value="venta">Venta</option>
-            <option value="servicio">Servicio</option>
-        </select>
-        <div id="campos-especificos"></div>
-        <button id="enviar" disabled>Publicar</button>
-    </form>
-    <output id="vista-previa"></output>
+  <main>
+    <h1>Gestor de publicaciones</h1>
+    <button id="consultar" type="button">Consultar estado</button>
+    <button id="consultar-inactivas" type="button">Consultar inactivas</button>
     <p id="estado"></p>
-    <button id="boton-actualizar" type="button">Actualizar</button>
-    <button id="boton-forzar-error" type="button">Forzar error</button>
-    <section id="lista-publicaciones"></section>
-    <script type="module" src="js/main.js"></script>
+    <form id="pedido" action="/publicaciones" method="post">
+      <label>Autor <input name="autor" required></label>
+      <label>Título <input name="titulo" minlength="5" maxlength="80" required></label>
+      <label>Descripción <textarea name="descripcion" minlength="20" maxlength="500" required></textarea></label>
+      <label>Categoría <select name="categoria"><option value="general">General</option><option value="aviso">Aviso</option><option value="evento">Evento</option><option value="compraventa">Compra-venta</option></select></label>
+      <button>Publicar</button>
+    </form>
+    <p id="salida"></p>
+    <section>
+      <button id="ver-json" type="button">Ver JSON</button>
+      <button id="ver-xml" type="button">Ver XML</button>
+      <pre id="crudo"></pre>
+      <ul id="lista-publicaciones"></ul>
+    </section>
+  </main>
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>

@@ -1,19 +1,32 @@
-// Clase Publicacion: modela un aviso de la comunidad estudiantil
-// (ej: "vendo apuntes", "busco companiero de grupo", "ofrezco clases particulares")
-
 import { Reporte } from "./Reporte.js";
 
+export const CATEGORIAS_PERMITIDAS = ["general", "aviso", "evento", "compraventa"];
+
 export class Publicacion {
-  // Contador que comparten la clase y todas sus subclases: cada publicacion se
-  // asigna su propio id al crearse, en vez de que se lo ponga el DOM desde afuera.
   static ultimoId = 0;
 
-  // Atributos: id, titulo, descripcion, autor, fechaPublicacion, activa, destacado
-  constructor(titulo, descripcion, autor) {
-    this.id = ++Publicacion.ultimoId;
-    this.titulo = titulo;
-    this.descripcion = descripcion;
-    this.autor = autor;
+  constructor(id, autor, titulo, descripcion, categoria = "general") {
+    const modoAnterior = typeof titulo === "object" && titulo !== null;
+    if (modoAnterior) {
+      this.id = ++Publicacion.ultimoId;
+      this.titulo = id;
+      this.descripcion = autor;
+      this.autor = titulo;
+      this.categoria = "general";
+    } else {
+      const autorNormalizado = autor?.trim() ?? "";
+      const tituloNormalizado = titulo?.trim() ?? "";
+      const descripcionNormalizada = descripcion?.trim() ?? "";
+      if (!autorNormalizado) throw new Error("El autor es obligatorio");
+      if (tituloNormalizado.length < 5 || tituloNormalizado.length > 80) throw new Error("El título debe tener entre 5 y 80 caracteres");
+      if (descripcionNormalizada.length < 20 || descripcionNormalizada.length > 500) throw new Error("La descripcion debe tener entre 20 y 500 caracteres");
+      if (!CATEGORIAS_PERMITIDAS.includes(categoria)) throw new Error(`La categoría debe ser una de: ${CATEGORIAS_PERMITIDAS.join(", ")}`);
+      this.id = id;
+      this.autor = autorNormalizado;
+      this.titulo = tituloNormalizado;
+      this.descripcion = descripcionNormalizada;
+      this.categoria = categoria;
+    }
     this.fechaPublicacion = new Date();
     this.activa = true;
     this.destacado = false;
@@ -22,94 +35,41 @@ export class Publicacion {
     this.estado = "pendiente";
   }
 
-  // Devuelve un string corto combinando titulo y autor
   mostrarResumen() {
-    return `"${this.titulo}" - publicado por ${this.autor.mostrarPerfil()}`;
+    const autor = typeof this.autor === "string" ? this.autor : this.autor.mostrarPerfil();
+    return `"${this.titulo}" - publicado por ${autor}`;
   }
 
-  // Sintesis de una linea para la vista previa del formulario: autor, titulo y estado
-  get resumen() {
-    const estado = this.activa ? "activa" : "inactiva";
-    return `${this.autor.obtenerNombre()} - ${this.titulo} (${estado})`;
-  }
+  get resumen() { return `${this.autorNombre()} - ${this.titulo} (${this.activa ? "activa" : "inactiva"})`; }
+  autorNombre() { return typeof this.autor === "string" ? this.autor : this.autor.obtenerNombre(); }
+  estaActiva() { return this.activa; }
+  esDeAutor(nombre) { return this.autorNombre() === nombre; }
+  darDeBaja() { this.activa = false; }
+  destacar() { this.destacado = true; }
+  opacar() { this.destacado = false; }
+  obtenerTitulo() { return this.titulo; }
+  diasPublicada() { return Math.floor((new Date() - this.fechaPublicacion) / 86400000); }
 
-  // Devuelve el valor del atributo activa
-  estaActiva() {
-    return this.activa;
-  }
-
-  // Desafio opcional: true si el autor coincide con el nombre recibido
-  esDeAutor(nombre) {
-    return this.autor.obtenerNombre() === nombre ;
-  }
-
-  darDeBaja() {
-    this.activa = false;
-  }
-
-  destacar() {
-    this.destacado = true;
-  }
-
-  opacar() {
-    this.destacado = false;
-  }
-
-  obtenerTitulo() {
-    return this.titulo
-  }
-
-    diasPublicada(){
-    const ms = new Date() - this.fechaPublicacion;
-    return Math.floor(ms / (1000 * 60 *60 *24));
-
-  }
-
-  // Agrega una etiqueta nueva, recortando espacios y evitando duplicados
-  // (comparando sin importar mayusculas/minusculas).
   agregarEtiqueta(etiqueta) {
     const normalizada = etiqueta.trim();
-    if (!normalizada) {
-      throw new Error("Etiqueta inválida");
-    }
-    if (!this.tieneEtiqueta(normalizada)) {
-      this.etiquetas.push(normalizada);
-    }
+    if (!normalizada) throw new Error("Etiqueta inválida");
+    if (!this.tieneEtiqueta(normalizada)) this.etiquetas.push(normalizada);
   }
 
-  tieneEtiqueta(etiqueta) {
-    const buscada = etiqueta.trim().toLowerCase();
-    return this.etiquetas.some((e) => e.toLowerCase() === buscada);
-  }
+  tieneEtiqueta(etiqueta) { return this.etiquetas.some((actual) => actual.toLowerCase() === etiqueta.trim().toLowerCase()); }
 
-  // Un mismo usuario no puede reportar dos veces la misma publicacion.
   reportar(usuario, motivo) {
-    const yaReporto = this.reportes.some((r) => r.usuario === usuario);
-    if (yaReporto) {
-      throw new Error("El usuario ya reportó esta publicación");
-    }
+    if (this.reportes.some((reporte) => reporte.usuario === usuario)) throw new Error("El usuario ya reportó esta publicación");
     this.reportes.push(new Reporte(usuario, motivo));
   }
 
-  requiereRevision() {
-    return this.reportes.length >= 3;
-  }
+  requiereRevision() { return this.reportes.length >= 3; }
 
-  // Consulta a un colaborador externo (el servicio de moderacion) y recien
-  // actualiza this.estado cuando esa consulta se resuelve. Si el servicio
-  // rechaza la promesa, el catch nunca llega a tocar this.estado y la
-  // publicacion queda como estaba: "pendiente".
   async revisar(servicioModeracion) {
     const decision = await servicioModeracion.evaluar(this);
-    if (decision === "aprobado") {
-      this.estado = "aprobada";
-    } else if (decision === "rechazado") {
-      this.estado = "rechazada";
-    } else {
-      throw new Error("Decisión de moderación inválida");
-    }
+    if (decision === "aprobado") this.estado = "aprobada";
+    else if (decision === "rechazado") this.estado = "rechazada";
+    else throw new Error("Decisión de moderación inválida");
     return this.estado;
   }
 }
-
-

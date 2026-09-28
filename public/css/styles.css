@@ -1,0 +1,9 @@
+body { font-family: Arial, sans-serif; margin: 2rem; color: #1f2937; }
+main { max-width: 720px; display: grid; gap: 1rem; }
+form { display: grid; gap: .75rem; }
+label { display: grid; gap: .25rem; }
+input, textarea, select, button { font: inherit; padding: .5rem; }
+button { cursor: pointer; }
+#salida[data-tipo="exito"] { background: #e6f4ea; border: 1px solid #2e7d32; padding: .75rem; }
+#salida[data-tipo="error"] { background: #fdecea; border: 1px solid #b3261e; padding: .75rem; }
+pre { overflow: auto; white-space: pre-wrap; }
