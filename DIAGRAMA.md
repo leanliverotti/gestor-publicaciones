@@ -1,5 +1,62 @@
 # Gestor de publicaciones
 
+## Clases
+
+```mermaid
+classDiagram
+  class Publicacion {
+    +number id
+    +string autor
+    +string titulo
+    +string descripcion
+    +string categoria
+    +boolean activa
+    +string[] etiquetas
+    +Reporte[] reportes
+    +string estado
+    +mostrarResumen() string
+  }
+
+  class RepositorioPublicaciones {
+    -string ruta
+    -Publicacion[] publicaciones
+    -number proximoId
+    +cargar() Promise
+    +guardar() Promise
+    +agregar(autor, titulo, descripcion, categoria) Promise~Publicacion~
+    +listar() Publicacion[]
+    +buscarPorId(id) Publicacion
+    +actualizar(id, cambios) Promise~Publicacion~
+    +eliminar(id) Promise~boolean~
+    +obtenerEstado() string
+  }
+
+  class Reporte {
+    +Usuario usuario
+    +string motivo
+    +Date fecha
+  }
+
+  class Usuario {
+    +string nombre
+    +string email
+  }
+
+  class RouterPublicaciones {
+    +GET /publicaciones
+    +POST /publicaciones
+    +PUT /publicaciones/:id
+    +DELETE /publicaciones/:id
+  }
+
+  RepositorioPublicaciones "1" o-- "0..*" Publicacion
+  Publicacion "1" o-- "0..*" Reporte
+  Reporte "*" --> "1" Usuario
+  RouterPublicaciones --> RepositorioPublicaciones
+```
+
+## Flujo
+
 ```mermaid
 flowchart LR
   U[Usuario] --> H[public/index.html]
